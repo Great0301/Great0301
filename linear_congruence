@@ -1,0 +1,134 @@
+#include <iostream>
+#include <cmath>
+
+const double pi = 3.1415926897932384;
+using namespace std;
+
+bool relative_prime(int b, int m){
+    int z = m;
+    while(b%m!=0)
+    {
+        z = b%m;
+        b = m;
+        m = z;
+    }
+    if (z==1)
+        return true;
+    else
+        return false;
+}
+
+void linear_congruence(int a, int b, int m, int x) {
+    double random_number[1000]; // represents random numbers
+    double sum=0; // represents sum of random numbers
+    int x1; // represents xn+1 in equation of linear congruence (Xn+1 = (a * Xn + b) mod M)
+    double mean;// represents mean of random numbers
+    
+    /*generate random number*/
+    for (int i = 1; i <=1000; i++) {
+        x1 = (a * x + b) % m;
+        x = x1;
+        random_number[i]=x1/1000.0;
+        sum = sum + x1/1000.0; // calculate sum of random numbers
+    }
+    
+    /*print random number*/
+    cout<<endl;
+    cout<<"Here are random numbers below"<<endl;
+    for (int i=1; i<=1000; i++){
+        cout<<i<<" "<<random_number[i]<<endl;
+    }
+    
+    /*calculate mean of random numbers*/
+    mean=sum/1000;
+    cout << "The average of random numbers is "<< mean << endl; // print the mean of random numbers
+    
+    double variance; // the variance of random numbers
+    double diff;
+    double sum_of_diff=0;
+    
+    for (int i=1;i<=1000; i++){
+        diff=pow(random_number[i]-mean,2);
+        sum_of_diff=sum_of_diff+diff;
+    }
+    
+    variance=sum_of_diff/(1000-1);
+    cout<<"The variance of random numbers is "<<variance<<endl;
+    
+    double standard_devitation;
+    standard_devitation=sqrt(variance);
+    cout<<"The standard devitations of random numbers is "<<standard_devitation<<endl;
+    
+    /*Box-Muller transformer*/
+    cout<<"\nNow, use Box-Muller transformation to generate random number according to definable mean and variance"<<endl;
+    double y1,y2;
+    double sum1=0;
+    double box_m[1000];
+    double mean_box_m;
+    double variance_box_m;
+    cout<< "Enter the mean you want: ";
+    cin>>mean_box_m;
+loop1:
+    cout<<"Enter the variance you want: ";
+    cin>>variance_box_m;
+    if (variance_box_m<0){
+        cout<<"Error! variance cannot be 0"<<endl;
+        goto loop1;
+    }
+    for (int i=1;i<=1000/2;i++){
+        y1 = sqrt(-2 * log(random_number[2*i-1]))*cos(2 * pi*random_number[2*i]);
+        y2 = sqrt(-2 * log(random_number[2*i]))*sin(2 * pi*random_number[2*i-1]);
+        y1=y1*sqrt(variance_box_m)+mean_box_m;
+        y2=y2*sqrt(variance_box_m)+mean_box_m;
+        box_m[2*i-1]=y1;
+        box_m[2*i]=y2;
+        cout << 2*i-1 << " " <<y1 << "\n" << 2*i << " "<< y2 << endl;
+        sum1=sum1+y1+y2;
+    }
+    
+    double mean1=sum1/1000;
+    cout<<"The mean after Box-Muller transformer is "<<mean1<<endl;
+    
+    double variance1;
+    double diff1;
+    double sum1_of_diff=0;
+    for (int i=1;i<=1000; i++){
+        diff1=pow(box_m[i]-mean1,2);
+        sum1_of_diff=sum1_of_diff+diff1;
+    }
+    
+    variance1=sum1_of_diff/(1000-1);
+    cout<<"The variance after Box-Muller transformer is "<<variance1<<endl;
+    double standard_devitation1;
+    standard_devitation1=sqrt(variance1);
+    cout<<"The standard devitation after Box-Muller transformer is "<<standard_devitation1<<endl;
+}
+
+int main() {
+loop:
+    int a, b, m, x;
+    cout<<"use linear congruence (Xn+1 = (a * Xn + b) mod M) to generate random number"<<endl;
+    cout<<"please enter value of a: ";
+    cin >> a;
+    cout<<"please enter value of b: ";
+    cin>>b;
+    cout<<"please enter value of m: ";
+    cin>>m;
+    cout<<"please enter value of x: ";
+    cin>>x;
+    linear_congruence(a, b, m, x); //97 3 1000 71
+    
+    int i = 0;
+    cout << "would you want to try again?\nEnter 1 if yes, enter any number if no" << endl;
+    cin >> i;
+    
+    switch (i) {
+        case 1:
+            cout << endl << endl << endl;
+            goto loop;
+            break;
+        default:
+            break;
+    }
+    return 0;
+}
